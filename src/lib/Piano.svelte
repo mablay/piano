@@ -1,44 +1,49 @@
+<div class="piano">
+  <svg width="100vw" viewBox="0 0 980 120">
+    <defs>
+      <linearGradient id="gradBlack" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0.5" stop-color="#222"/>
+          <stop offset="1" stop-color="#666"/>
+      </linearGradient>
+      <linearGradient id="gradWhite" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fffff0"/>
+        <stop offset="1" stop-color="#CCC"/>
+    </linearGradient>
+  </defs>    
+    {#each indices as index}
+    <PianoKey index={index}/>
+    {/each}
+  </svg>
+
+</div>
+
 <script>
-	import { spring } from 'svelte/motion';
+	import { spring } from 'svelte/motion'
+  import PianoKey from './PianoKey.svelte'
 
-	let count = 0;
-
-	const displayed_count = spring();
-	$: displayed_count.set(count);
-	$: offset = modulo($displayed_count, 1);
-
-	/**
-	 * @param {number} n
-	 * @param {number} m
-	 */
-	function modulo(n, m) {
-		// handle negative numbers
-		return ((n % m) + m) % m;
+  const indices = [...new Array(84)].map((x, i) => i)
+  /** @param {Event} event */
+	function keyPress(event) {
+    console.log('key press', event)
+		return true
 	}
 </script>
 
-<div class="counter">
-	<button on:click={() => (count -= 1)} aria-label="Decrease the counter by one">
-		<svg aria-hidden="true" viewBox="0 0 1 1">
-			<path d="M0,0.5 L1,0.5" />
-		</svg>
-	</button>
-
-	<div class="counter-viewport">
-		<div class="counter-digits" style="transform: translate(0, {100 * offset}%)">
-			<strong class="hidden" aria-hidden="true">{Math.floor($displayed_count + 1)}</strong>
-			<strong>{Math.floor($displayed_count)}</strong>
-		</div>
-	</div>
-
-	<button on:click={() => (count += 1)} aria-label="Increase the counter by one">
-		<svg aria-hidden="true" viewBox="0 0 1 1">
-			<path d="M0,0.5 L1,0.5 M0.5,0 L0.5,1" />
-		</svg>
-	</button>
-</div>
-
 <style>
+  .piano-key {
+    cursor: pointer;
+    fill:ivory;
+    stroke:grey;
+    stroke-width:2;
+    /* fill-rule:evenodd; */
+  }
+
+  .piano-key.black {
+    fill:#222;
+    stroke:black;
+    stroke-width:2;
+  }
+
 	.counter {
 		display: flex;
 		border-top: 1px solid rgba(0, 0, 0, 0.1);
@@ -61,11 +66,6 @@
 
 	.counter button:hover {
 		background-color: var(--secondary-color);
-	}
-
-	svg {
-		width: 25%;
-		height: 25%;
 	}
 
 	path {
