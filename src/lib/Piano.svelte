@@ -18,7 +18,6 @@
 </div>
 
 <script>
-	import { spring } from 'svelte/motion'
   import PianoKey from './PianoKey.svelte'
 
   const indices = [...new Array(84)].map((x, i) => i)
@@ -30,78 +29,5 @@
 </script>
 
 <style>
-  .piano-key {
-    cursor: pointer;
-    fill:ivory;
-    stroke:grey;
-    stroke-width:2;
-    /* fill-rule:evenodd; */
-  }
 
-  .piano-key.black {
-    fill:#222;
-    stroke:black;
-    stroke-width:2;
-  }
-
-	.counter {
-		display: flex;
-		border-top: 1px solid rgba(0, 0, 0, 0.1);
-		border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-		margin: 1rem 0;
-	}
-
-	.counter button {
-		width: 2em;
-		padding: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border: 0;
-		background-color: transparent;
-		touch-action: manipulation;
-		color: var(--text-color);
-		font-size: 2rem;
-	}
-
-	.counter button:hover {
-		background-color: var(--secondary-color);
-	}
-
-	path {
-		vector-effect: non-scaling-stroke;
-		stroke-width: 2px;
-		stroke: var(--text-color);
-	}
-
-	.counter-viewport {
-		width: 8em;
-		height: 4em;
-		overflow: hidden;
-		text-align: center;
-		position: relative;
-	}
-
-	.counter-viewport strong {
-		position: absolute;
-		display: flex;
-		width: 100%;
-		height: 100%;
-		font-weight: 400;
-		color: var(--accent-color);
-		font-size: 4rem;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.counter-digits {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-	}
-
-	.hidden {
-		top: -100%;
-		user-select: none;
-	}
 </style>
