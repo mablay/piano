@@ -27,6 +27,9 @@
   import { getNote } from './util'
   import { inMsg } from '../store/midi.js'
   import { synth } from '../store/synth.js'
+  import { activeKeys } from '../store/piano.js'
+
+  const indices = [...new Array(84)].map((x, i) => i)
 
   /**
    * @typedef PianoKeyEvent
@@ -44,16 +47,14 @@
     const note = getNote(tone - 24)
     if (cmd === 144) {
       const velocity = vel / 127
-      keyDown({ note, velocity, source })
+      keyDown({ note, velocity, source, tone })
     } else if (cmd === 128) {
       const velocity = vel / 127
-      keyUp({ note, velocity, source })
+      keyUp({ note, velocity, source, tone })
     }
   })
 
   onDestroy(() => unsubscribe())
-
-  const indices = [...new Array(84)].map((x, i) => i)
 
   /** @param {any} event */
 	function virtualKeyUp(event) {
@@ -64,31 +65,32 @@
     keyDown(event.detail)
 	}
 
-  const amplitude = '▁▂▃▄▅▆▇█'.split('')
-  /** @type {{ [source:string]: string }} */
-  const sourceIcon = {
-    virtual: '👆',
-    keyboard: '⌨️',
-    midi: '🎹'
+  /** @param {PianoKeyEvent} event */
+  function logKeyEvent ({ note, velocity, source, command = '' }) {
+    const src = { virtual: '👆', keyboard: '🔤', midi: '🎹' }[source] || '?'
+    const dir = { keydown: '⬇️', keyup: '⬆️' }[command] || '?'
+    const force = '▁▂▃▄▅▆▇█'.split('')[Math.floor(velocity * 7)]
+    console.log([dir, src, force, ' ', note].join(''))
   }
 
   /** @param {PianoKeyEvent} event */
-  function logKeyEvent ({ note, velocity, source }) {
-    const src = sourceIcon[source] || '?'
-    const i = Math.floor(velocity * 7)
-    const force = amplitude[i]
-    console.log(`${src}${note}⬇️${force}`)
-  }
-
-  /** @param {PianoKeyEvent} event */
-	function keyUp({ note, velocity, source }) {
-    logKeyEvent({ note, velocity, source })
+	function keyUp({ note, tone, velocity, source }) {
+    logKeyEvent({ note, velocity, source, command: 'keyup' })
     synth.keyUp({ note })
+    activeKeys.update(x => {
+      x.delete((tone || 25) - 24)
+      return x
+    })
 	}
   /** @param {PianoKeyEvent} event */
-	function keyDown({ note, velocity, source }) {
-    logKeyEvent({ note, velocity, source })
+	function keyDown({ note, tone, velocity, source }) {
+    logKeyEvent({ note, velocity, source, command: 'keydown' })
     synth.keyDown({ note, velocity })
+    activeKeys.update(x => {
+      x.add((tone || 25) - 24)
+      return x
+    })
+    // console.log($activeKeys)
 	}
 </script>
 

@@ -17,24 +17,9 @@ export async function loadSynth () {
   await synth.load()
   synthLoaded.set(true)
   console.log('synth loaded!')
-  synth.keyDown({
-    note: 'C4'
-  })
+  // synth.keyDown({ note: 'C4' })
   console.log('synth loading time:', (Date.now() - start) / 1000)
 }
-
-// export const piano = new Piano({
-//   velocities: 5 // 1 - 16
-// })
-// //connect it to the speaker output
-// piano.toDestination()
-
-// piano.load().then(() => {
-//   console.log('piano loaded!')
-//   piano.keyDown({
-//     note: 'C4'
-//   })
-// })
 
 /**
  * WebAudio can only be initiated as response to a user action

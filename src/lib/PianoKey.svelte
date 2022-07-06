@@ -3,11 +3,13 @@
   on:mouseup={keyUp}
   class="piano-key"
   class:black="{black}"
+  class:active="{active}"
+  x-data={index}
   points={points}
 />
 
 <script>
-import { synth } from '../store/synth.js'
+import { activeKeys } from '../store/piano.js'
 import { createEventDispatcher } from 'svelte'
 import { getNote } from './util.js';
 const dispatch = createEventDispatcher()
@@ -16,6 +18,8 @@ const dispatch = createEventDispatcher()
 // export let black = false
 /** @type {number} indicates key position */
 export let index = 0
+
+$: active = $activeKeys.has(index)
 
 const whiteLeft = { black: false, polygon: [[1, 2], [1, 79], [19, 79], [19, 50], [12, 50], [12, 2]] } // └
 const whiteMiddle = { black: false, polygon: [[6, 2], [6, 50], [1, 50], [1, 79], [19, 79], [19, 50], [14, 50], [14, 2]] } // ┴
@@ -54,13 +58,9 @@ function getKey (i) {
 function keyPress (event) {
   dispatch('virtualkeydown', {
     note: getNote(index),
-    velocity: 1,
+    velocity: 0.75,
     source: 'virtual'
   })
-  // console.log(`🖱️${note}⬇️`)
-  // console.log(`🔤${note}⬇️`)
-  // console.log(`🎹${note}⬇️`)
-  // synth.keyDown({ note })
 }
 
 /** @param {Event} event */
@@ -70,10 +70,6 @@ function keyUp (event) {
     velocity: 0,
     source: 'virtual'
   })
-  // console.log(`🖱️${note}⬆️`)
-  // console.log(`🔤${note}⬆️`)
-  // console.log(`🎹${note}⬆️`)
-  // synth.keyUp({ note })
 }
 </script>
 
@@ -88,7 +84,7 @@ function keyUp (event) {
 .piano-key:hover {
   fill: url(#gradWhite);
 }
-.piano-key:active {
+.piano-key:active, .piano-key.active {
   fill: skyblue;
 }
 
