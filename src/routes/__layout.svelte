@@ -1,6 +1,10 @@
 <script>
 	import Header from '$lib/header/Header.svelte'
 	import '../app.css'
+  import { initMidi } from '../store/midi.js'
+  import { loadSynth } from '../store/synth.js'
+  loadSynth()
+  initMidi()
 </script>
 
 <Header />

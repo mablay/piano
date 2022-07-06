@@ -1,28 +1,15 @@
 <script>
-	import { page } from '$app/stores';
-	import logo from './svelte-logo.svg';
-  async function loadPiano () {
-    const start = Date.now()
-    const { Piano } = await import('@tonejs/piano')
-    const piano = new Piano({
-      velocities: 5 // 1 - 16
-    })
-    //connect it to the speaker output
-    piano.toDestination()
-
-    await piano.load()
-    console.log('piano loaded!')
-    piano.keyDown({
-      note: 'C4'
-    })
-    console.log('piano loading time:', (Date.now() - start) / 1000)
-  }
+	import { page } from '$app/stores'
+  import { synthLoaded } from '../../store/synth.js'
 </script>
 
 <header>
 	<div class="corner">
-		<!-- TODO put something else here? github link? -->
-    <button on:click={loadPiano}>load</button>
+    {#if $synthLoaded}
+    <span class="icon">🔊</span>
+    {:else}
+    <span class="icon">🔇</span>
+    {/if}
 	</div>
 
 	<nav>
@@ -58,6 +45,11 @@
 		width: 3em;
 		height: 3em;
 	}
+
+  .corner > .icon {
+    font-size: 34px;
+    padding-left: 6px;
+  }
 
 	nav {
 		display: flex;

@@ -1,11 +1,17 @@
 <polygon
-  on:click={keyPress}
+  on:mousedown={keyPress}
+  on:mouseup={keyUp}
   class="piano-key"
   class:black="{black}"
   points={points}
 />
 
 <script>
+import { synth } from '../store/synth.js'
+import { createEventDispatcher } from 'svelte'
+import { getNote } from './util.js';
+const dispatch = createEventDispatcher()
+
 /** @type {boolean} indicates key color */
 // export let black = false
 /** @type {number} indicates key position */
@@ -46,7 +52,28 @@ function getKey (i) {
 
 /** @param {Event} event */
 function keyPress (event) {
-  console.log('PianoKey:keyPress', index)
+  dispatch('virtualkeydown', {
+    note: getNote(index),
+    velocity: 1,
+    source: 'virtual'
+  })
+  // console.log(`🖱️${note}⬇️`)
+  // console.log(`🔤${note}⬇️`)
+  // console.log(`🎹${note}⬇️`)
+  // synth.keyDown({ note })
+}
+
+/** @param {Event} event */
+function keyUp (event) {
+  dispatch('virtualkeyup', {
+    note: getNote(index),
+    velocity: 0,
+    source: 'virtual'
+  })
+  // console.log(`🖱️${note}⬆️`)
+  // console.log(`🔤${note}⬆️`)
+  // console.log(`🎹${note}⬆️`)
+  // synth.keyUp({ note })
 }
 </script>
 

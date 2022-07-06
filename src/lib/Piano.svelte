@@ -11,27 +11,84 @@
     </linearGradient>
   </defs>    
     {#each indices as index}
-    <PianoKey index={index}/>
+    <PianoKey
+      index={index}
+      on:virtualkeyup={virtualKeyUp}
+      on:virtualkeydown={virtualKeyDown}
+    />
     {/each}
   </svg>
 
 </div>
 
 <script>
+  import { onDestroy } from 'svelte'
   import PianoKey from './PianoKey.svelte'
-  // import { Piano } from '@tonejs/piano'
-  import { onMount } from 'svelte'
+  import { getNote } from './util'
+  import { inMsg } from '../store/midi.js'
+  import { synth } from '../store/synth.js'
 
+  /**
+   * @typedef PianoKeyEvent
+   * @property {String} [command] // keyup
+   * @property {String} note // C#4
+   * @property {Number} [tone] // decimal representation of note: 48
+   * @property {Number} velocity // 0 - 127
+   * @property {String} source // virtual, keyboard, midi
+   *//** */
 
-  onMount(async () => {
-    console.log('onMount')
+  const unsubscribe = inMsg.subscribe(value => {
+    if (!value) return
+    const source = 'midi'
+    const [cmd, tone, vel] = value.data
+    const note = getNote(tone - 24)
+    if (cmd === 144) {
+      const velocity = vel / 127
+      keyDown({ note, velocity, source })
+    } else if (cmd === 128) {
+      const velocity = vel / 127
+      keyUp({ note, velocity, source })
+    }
   })
 
+  onDestroy(() => unsubscribe())
+
   const indices = [...new Array(84)].map((x, i) => i)
-  /** @param {Event} event */
-	function keyPress(event) {
-    console.log('key press', event)
-		return true
+
+  /** @param {any} event */
+	function virtualKeyUp(event) {
+    keyUp(event.detail)
+	}
+  /** @param {any} event */
+	function virtualKeyDown(event) {
+    keyDown(event.detail)
+	}
+
+  const amplitude = '▁▂▃▄▅▆▇█'.split('')
+  /** @type {{ [source:string]: string }} */
+  const sourceIcon = {
+    virtual: '👆',
+    keyboard: '⌨️',
+    midi: '🎹'
+  }
+
+  /** @param {PianoKeyEvent} event */
+  function logKeyEvent ({ note, velocity, source }) {
+    const src = sourceIcon[source] || '?'
+    const i = Math.floor(velocity * 7)
+    const force = amplitude[i]
+    console.log(`${src}${note}⬇️${force}`)
+  }
+
+  /** @param {PianoKeyEvent} event */
+	function keyUp({ note, velocity, source }) {
+    logKeyEvent({ note, velocity, source })
+    synth.keyUp({ note })
+	}
+  /** @param {PianoKeyEvent} event */
+	function keyDown({ note, velocity, source }) {
+    logKeyEvent({ note, velocity, source })
+    synth.keyDown({ note, velocity })
 	}
 </script>
 
