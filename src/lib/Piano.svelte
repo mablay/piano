@@ -19,6 +19,13 @@
 
 <script>
   import PianoKey from './PianoKey.svelte'
+  // import { Piano } from '@tonejs/piano'
+  import { onMount } from 'svelte'
+
+
+  onMount(async () => {
+    console.log('onMount')
+  })
 
   const indices = [...new Array(84)].map((x, i) => i)
   /** @param {Event} event */

@@ -1,11 +1,28 @@
 <script>
 	import { page } from '$app/stores';
 	import logo from './svelte-logo.svg';
+  async function loadPiano () {
+    const start = Date.now()
+    const { Piano } = await import('@tonejs/piano')
+    const piano = new Piano({
+      velocities: 5 // 1 - 16
+    })
+    //connect it to the speaker output
+    piano.toDestination()
+
+    await piano.load()
+    console.log('piano loaded!')
+    piano.keyDown({
+      note: 'C4'
+    })
+    console.log('piano loading time:', (Date.now() - start) / 1000)
+  }
 </script>
 
 <header>
 	<div class="corner">
 		<!-- TODO put something else here? github link? -->
+    <button on:click={loadPiano}>load</button>
 	</div>
 
 	<nav>
