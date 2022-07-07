@@ -96,7 +96,7 @@ function keyUp (event) {
 .piano-key.black:hover {
   fill: url(#gradBlack);
 }
-.piano-key.black:active {
+.piano-key.black:active, .piano-key.black.active {
   fill: skyblue;
 }
 </style>

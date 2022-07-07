@@ -1,3 +1,8 @@
+<svelte:window
+  on:keydown={keyboardHandler}
+  on:keyup={keyboardHandler}
+/>
+
 <div class="piano">
   <svg width="100vw" viewBox="0 0 980 120">
     <defs>
@@ -18,7 +23,6 @@
     />
     {/each}
   </svg>
-
 </div>
 
 <script>
@@ -40,6 +44,12 @@
    * @property {String} source // virtual, keyboard, midi
    *//** */
 
+  /* *************************************** 
+    - MIDI Keyboard -
+    Events usually caused by an external USB keyboard controller
+    Tested with Arturia KeyLab Essential 88
+  *************************************** */
+
   const unsubscribe = inMsg.subscribe(value => {
     if (!value) return
     const source = 'midi'
@@ -53,8 +63,13 @@
       keyUp({ note, velocity, source, tone })
     }
   })
-
   onDestroy(() => unsubscribe())
+
+  /* *************************************** 
+    - Virtual Keyboard -
+    Events caused by clicking or tapping on
+    the PianoKey.svelte components
+  *************************************** */
 
   /** @param {any} event */
 	function virtualKeyUp(event) {
@@ -64,6 +79,32 @@
 	function virtualKeyDown(event) {
     keyDown(event.detail)
 	}
+
+  /* *************************************** 
+    - Keyboard -
+    Events from your computer keyboard
+    QWERTY & QWERTZ compatible mapping:
+        Keyboard                Note
+      r t   u i o    =>   C# D#    F# G# A#
+     d f g h j k l   =>  C  D  E  F  G  A  B
+  *************************************** */
+
+  /** @param {any} event */
+  function keyboardHandler (event) {
+    if (event.repeat) return
+    if (!['keyup', 'keydown'].includes(event.type)) return
+    const source = 'keyboard'
+    const command = event.type
+    const i = 'drftghujikol'.split('').indexOf(event.key)
+    if (i < 0) return
+    const tone = i + 48
+    const note = getNote(tone)
+    const velocity = 0.6
+    // console.log('keyboardHandler', event)
+    logKeyEvent({ note, velocity, source, command })
+    if (command === 'keyup') keyUp({ note, tone, velocity, source })
+    if (command === 'keydown') keyDown({ note, tone, velocity, source })
+  }
 
   /** @param {PianoKeyEvent} event */
   function logKeyEvent ({ note, velocity, source, command = '' }) {
