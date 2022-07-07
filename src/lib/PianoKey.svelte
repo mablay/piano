@@ -56,8 +56,10 @@ function getKey (i) {
 
 /** @param {Event} event */
 function keyPress (event) {
+  const tone = index + 24
   dispatch('virtualkeydown', {
-    note: getNote(index),
+    tone,
+    note: getNote(tone),
     velocity: 0.75,
     source: 'virtual'
   })
@@ -65,8 +67,10 @@ function keyPress (event) {
 
 /** @param {Event} event */
 function keyUp (event) {
+  const tone = index + 24
   dispatch('virtualkeyup', {
-    note: getNote(index),
+    tone,
+    note: getNote(tone),
     velocity: 0,
     source: 'virtual'
   })

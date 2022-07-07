@@ -107,28 +107,28 @@
   }
 
   /** @param {PianoKeyEvent} event */
-  function logKeyEvent ({ note, velocity, source, command = '' }) {
+  function logKeyEvent ({ note, velocity, source, command = '', tone }) {
     const src = { virtual: '👆', keyboard: '🔤', midi: '🎹' }[source] || '?'
     const dir = { keydown: '⬇️', keyup: '⬆️' }[command] || '?'
     const force = '▁▂▃▄▅▆▇█'.split('')[Math.floor(velocity * 7)]
-    console.log([dir, src, force, ' ', note].join(''))
+    console.log([dir, src, force, ' ', note].join(''), 'tone:', tone)
   }
 
   /** @param {PianoKeyEvent} event */
-	function keyUp({ note, tone, velocity, source }) {
-    logKeyEvent({ note, velocity, source, command: 'keyup' })
-    synth.keyUp({ note })
+	function keyUp(event) {
+    logKeyEvent({ ...event, command: 'keyup' })
+    synth.keyUp(event)
     activeKeys.update(x => {
-      x.delete((tone || 25) - 24)
+      x.delete((event.tone || 25) - 24)
       return x
     })
 	}
   /** @param {PianoKeyEvent} event */
-	function keyDown({ note, tone, velocity, source }) {
-    logKeyEvent({ note, velocity, source, command: 'keydown' })
-    synth.keyDown({ note, velocity })
+	function keyDown(event) {
+    logKeyEvent({ ...event, command: 'keydown' })
+    synth.keyDown(event)
     activeKeys.update(x => {
-      x.add((tone || 25) - 24)
+      x.add((event.tone || 25) - 24)
       return x
     })
     // console.log($activeKeys)
