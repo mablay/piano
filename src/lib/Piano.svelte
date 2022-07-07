@@ -53,13 +53,16 @@
   const unsubscribe = inMsg.subscribe(value => {
     if (!value) return
     const source = 'midi'
-    const [cmd, tone, vel] = value.data
-    const note = getNote(tone - 24)
+    const [cmd, ctrltone, vel] = value.data
     if (cmd === 144) {
       const velocity = vel / 127
+      const tone = ctrltone
+      const note = getNote(tone) // TODO: check if tone mapping is accurate
       keyDown({ note, velocity, source, tone })
     } else if (cmd === 128) {
       const velocity = vel / 127
+      const tone = ctrltone
+      const note = getNote(tone) // TODO: check if tone mapping is accurate
       keyUp({ note, velocity, source, tone })
     }
   })
@@ -97,11 +100,10 @@
     const command = event.type
     const i = 'drftghujikol'.split('').indexOf(event.key)
     if (i < 0) return
-    const tone = i + 48
+    const tone = i + 12 * 6
     const note = getNote(tone)
     const velocity = 0.6
     // console.log('keyboardHandler', event)
-    logKeyEvent({ note, velocity, source, command })
     if (command === 'keyup') keyUp({ note, tone, velocity, source })
     if (command === 'keydown') keyDown({ note, tone, velocity, source })
   }
