@@ -1,6 +1,9 @@
 <polygon
-  on:mousedown={keyPress}
+  on:mousedown={keyDown}
+  on:mouseenter={mouseEnter}
   on:mouseup={keyUp}
+  on:mouseleave={mouseLeave}
+  bind:this={polygon}
   class="piano-key"
   class:black="{black}"
   class:active="{active}"
@@ -19,7 +22,27 @@ const dispatch = createEventDispatcher()
 /** @type {number} indicates key position */
 export let index = 0
 
+/** @type {any} */
+let polygon
 $: active = $activeKeys.has(index)
+
+/** @param {any} event */
+function mouseEnter (event) {
+  if (event.which === 1) {
+    // console.log('mouseEnter', event)
+    keyDown()
+  }
+}
+
+/** @param {any} event */
+function mouseLeave (event) {
+  if (event.which === 1) {
+    // console.log('mouseleave')
+    keyUp()
+    polygon.style.display = 'none'
+    polygon.style.display = 'block'
+  }
+}
 
 const blackKey = { black: true, polygon: [[4, 1], [4, 69], [16, 69], [16, 1]] }
 // left end of the 88 keyboard
@@ -79,8 +102,7 @@ function getKey (i) {
   return { points, black }
 }
 
-/** @param {Event} event */
-function keyPress (event) {
+function keyDown () {
   const tone = index + 24
   dispatch('virtualkeydown', {
     tone,
@@ -90,8 +112,7 @@ function keyPress (event) {
   })
 }
 
-/** @param {Event} event */
-function keyUp (event) {
+function keyUp () {
   const tone = index + 24
   dispatch('virtualkeyup', {
     tone,
@@ -115,7 +136,8 @@ function keyUp (event) {
   /* fill: url(#gradWhite); */
   stroke:#888;
 }
-.piano-key:active, .piano-key.active {
+/* .piano-key:active,  */
+.piano-key.active {
   /* fill: skyblue; */
   fill: url(#gradWhite);
 }
@@ -130,7 +152,8 @@ function keyUp (event) {
   /* fill:#222; */
   stroke: #222;
 }
-.piano-key.black:active, .piano-key.black.active {
+/* .piano-key.black:active,  */
+.piano-key.black.active {
   /* fill: black; */
   fill: url(#gradBlackPressed);
   filter: drop-shadow( 1px 1px 2px rgba(0, 0, 0, .7));
