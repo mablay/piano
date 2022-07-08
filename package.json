@@ -2,6 +2,7 @@
 	"name": "piano",
 	"version": "0.0.1",
 	"scripts": {
+		"start": "vite dev",
 		"dev": "vite dev",
 		"build": "svelte-kit build",
 		"package": "svelte-kit package",

@@ -3,27 +3,29 @@
   on:keyup={keyboardHandler}
 />
 
-<div class="piano">
-  <svg width="100vw" viewBox="0 0 980 120">
-    <defs>
-      <linearGradient id="gradBlack" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0.5" stop-color="#222"/>
-          <stop offset="1" stop-color="#666"/>
-      </linearGradient>
-      <linearGradient id="gradWhite" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#fffff0"/>
-        <stop offset="1" stop-color="#CCC"/>
+<svg class="piano" viewBox="0 0 1040 112">
+  <defs>
+    <linearGradient id="gradBlack" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0.7" stop-color="#222"/>
+        <stop offset="1" stop-color="#666"/>
     </linearGradient>
-  </defs>    
-    {#each indices as index}
-    <PianoKey
-      index={index}
-      on:virtualkeyup={virtualKeyUp}
-      on:virtualkeydown={virtualKeyDown}
-    />
-    {/each}
-  </svg>
-</div>
+    <linearGradient id="gradBlackPressed" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0.2" stop-color="#222"/>
+      <stop offset="1" stop-color="#888"/>
+  </linearGradient>
+  <linearGradient id="gradWhite" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffff0"/>
+      <stop offset="1" stop-color="#DDD"/>
+  </linearGradient>
+</defs>    
+  {#each indices as index}
+  <PianoKey
+    index={index}
+    on:virtualkeyup={virtualKeyUp}
+    on:virtualkeydown={virtualKeyDown}
+  />
+  {/each}
+</svg>
 
 <script>
   import { onDestroy } from 'svelte'
@@ -33,7 +35,12 @@
   import { synth } from '../store/synth.js'
   import { activeKeys } from '../store/piano.js'
 
-  const indices = [...new Array(84)].map((x, i) => i)
+  // const indices = [...new Array(84)].map((x, i) => i)
+  // this strange looking arrangement draws black keys on top of white keys
+  // allowing the black keys to drop their shadow onto the white keys
+  const indices = [...new Array(7)].flatMap((x, i) => [0, 2, 4, 5, 7, 9, 11, 1, 3, 6, 8, 10].map(y => 24 + y + i * 12))
+  indices.unshift(21, 23, 22)
+  indices.push(108)
 
   /**
    * @typedef PianoKeyEvent
@@ -100,7 +107,7 @@
     const command = event.type
     const i = 'drftghujikol'.split('').indexOf(event.key)
     if (i < 0) return
-    const tone = i + 12 * 6
+    const tone = i + 12 * 7
     const note = getNote(tone)
     const velocity = 0.6
     // console.log('keyboardHandler', event)
@@ -138,5 +145,9 @@
 </script>
 
 <style>
-
+.piano {
+  position: fixed;
+  bottom: 0;
+  width: 100vw;
+}
 </style>
