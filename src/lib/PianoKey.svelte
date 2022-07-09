@@ -8,6 +8,7 @@
   class:black="{black}"
   class:active="{active}"
   x-data={index}
+  x-note={note}
   points={points}
 />
 
@@ -21,6 +22,8 @@ const dispatch = createEventDispatcher()
 // export let black = false
 /** @type {number} indicates key position */
 export let index = 0
+const tone = index + 21
+const note = getNote(tone)
 
 /** @type {any} */
 let polygon
@@ -77,46 +80,45 @@ const octaveKeys = [
 const { points, black } = getKey(index)
 
 /**
- * index 0 = C-2
- * Arturia begins with A-1 = 21
+ * index 0  = A0 = tone 21
+ * index 87 = C8 = tone 108
+ * The Arturia KeyLab Essential 88 begins with A0
  * one octave has 7 white keys (70px)
  * @param {number} i key index
  */
 function getKey (i) {
   let key
-  if (i === 21) {
-    key = { ...whiteA0, offset: 0 }
-  } else if (i === 22) {
-    key = { ...blackKey, offset: 11 }
-  } else if (i === 23) {
-    key = { ...whiteB0, offset: 20 }
-  } else if (i === 108) {
-    key = { ...whiteC7, offset: -100 }
+  if (i === 0) {
+    key = { ...whiteA0, offset: 140 }
+  } else if (i === 1) {
+    key = { ...blackKey, offset: 151 }
+  } else if (i === 2) {
+    key = { ...whiteB0, offset: 160 }
+  } else if (i === 87) {
+    key = { ...whiteC7, offset: +40 }
   } else {
-    key = octaveKeys[i % 12]
-    key.offset = key.offset - 100
+    key = octaveKeys[(i - 3) % 12]
+    key.offset = key.offset + 40
   }
   const { offset, black, polygon } = key
-  const dx = Math.floor(i / 12 - 1) * 7 * 20 + offset
+  const dx = Math.floor((i - 3) / 12) * 7 * 20 + offset
   const points = polygon.map(([x, y]) => `${x + dx}, ${y}`).join(' ')
   return { points, black }
 }
 
 function keyDown () {
-  const tone = index + 24
   dispatch('virtualkeydown', {
     tone,
-    note: getNote(tone),
+    note,
     velocity: 0.5,
     source: 'virtual'
   })
 }
 
 function keyUp () {
-  const tone = index + 24
   dispatch('virtualkeyup', {
     tone,
-    note: getNote(tone),
+    note,
     velocity: 0,
     source: 'virtual'
   })

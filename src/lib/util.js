@@ -19,7 +19,7 @@ export function toAscii (text) {
 export function getNote (index) {
   const i = index
   const notes = 'C C# D D# E F F# G G# A A# B'.split(' ')
-  const octave = Math.floor(i / 12) - 2
+  const octave = Math.floor(i / 12) - 1
   const note = notes[i % 12] + octave
   return note
 }

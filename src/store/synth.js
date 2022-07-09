@@ -1,7 +1,14 @@
 import { writable } from 'svelte/store'
 
 export const synthLoaded = writable(false)
-/** @type { import('@tonejs/piano').Piano } */
+
+/**
+ * C4 = 261.63 Hz
+ * It seems only Yamaha refers to that frequency as C3.
+ * That cost me 3h because it was super confusing.
+ * I'm not going with Yamaha here but with the rest of the
+ * world and especially with the MIDI standard.
+ * @type { import('@tonejs/piano').Piano } */
 export let synth
 
 export async function loadSynth () {

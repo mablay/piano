@@ -1,38 +1,42 @@
-# create-svelte
+# Learn Piano
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+**Motivation**  
+I have a MIDI controller keyboard and am staring to learn playing the piano.
+Looking for a free / open source piano learning experience, I found
+a lot of great resources on the web. Yet somehow, I had the feeling that sth. is missing.
 
-## Creating a project
+## Features 
 
-If you're seeing this, you've probably already done this step. Congrats!
+Simulate a piano supporting inputs:
 
-```bash
-# create a new project in the current directory
-npm init svelte
+* MIDI controller keyboard - starting with an *Arturia KeyLab Essential 88*
+* Computer Keyboard - more for testing than for actually playing
+* Mouse click on virtual keyboard - again, this is for testing
 
-# create a new project in my-app
-npm init svelte my-app
-```
+output
 
-## Developing
+* Sampled *Salamander Grand Piano* synth
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+
+## Run
 
 ```bash
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+## Possible features
+Here's a list of possible features.
 
-To create a production version of your app:
+- [ ] sustain pedal
+- [ ] clean code (separate rendering from function)
+- [ ] clean MIDI controller life cycle
+- [ ] tutorial mechanics
+- [ ] Practice mode: Notes, chords, inversions, sheet music, rhythm / timing
+- [ ] animated keypress history, see [Shared Piano](https://musiclab.chromeexperiments.com/Shared-Piano)
+- [ ] record & playback
+- [ ] multiplayer support (WebSocket or better WebRTC)
+- [ ] other instruments
 
-```bash
-npm run build
-```
+## Development
 
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+The app is written in JavaScript using [Svelte Kit](https://kit.svelte.dev/) as application framework.

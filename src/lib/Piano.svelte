@@ -14,7 +14,7 @@
       <stop offset="1" stop-color="#888"/>
   </linearGradient>
   <linearGradient id="gradWhite" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#fffff0"/>
+      <stop offset="0.2" stop-color="#fffff0"/>
       <stop offset="1" stop-color="#DDD"/>
   </linearGradient>
 </defs>    
@@ -35,12 +35,43 @@
   import { synth } from '../store/synth.js'
   import { activeKeys } from '../store/piano.js'
 
-  // const indices = [...new Array(84)].map((x, i) => i)
-  // this strange looking arrangement draws black keys on top of white keys
-  // allowing the black keys to drop their shadow onto the white keys
-  const indices = [...new Array(7)].flatMap((x, i) => [0, 2, 4, 5, 7, 9, 11, 1, 3, 6, 8, 10].map(y => 24 + y + i * 12))
-  indices.unshift(21, 23, 22)
-  indices.push(108)
+  /** @param {Number} len */
+  const range = len => [...new Array(len)].map((_, i) => i)
+  /*
+  To align key index mapping with MIDI tones:
+
+  | Hz      | Note   | Tone  | Index
+  |---------|--------|-------|------
+  |   27.50 |   A0   |   21  |   0
+  |  261.63 |   C4   |   60  |  39
+  | 4186.01 |   C8   |  108  |  87
+
+  Hz: physical frequency
+  Note: name of the note by MIDI standard, not Yamaha!
+  Tone: The midi tone value as sent by an Arturia KeyLab Essential 88 keyboard conroller
+  Index: position of the piano key from left to right
+  */
+  
+  // Piano keys in this component are rendered via SVG polygons.
+  // Black keys shall drop shadows on the white keys using CSS.
+  // That requires us to put the black key SVG elements after the
+  // white key SVG elements in the DOM. Otherwise the CSS filter: drop-shadow(...)
+  // rule will cast incorrect shadows.
+  // That's why we shuffle the indices in such a funny way.
+  // Notice:
+  // The piano keys and their indices are only shuffled in the DOM,
+  // on screen they are neatly in order from left to right 0 - 87.
+
+  /** shuffle piano key DOM order so black keys cast correct shadows. */
+  const indices = [
+    0, 2, 1,
+    ...range(7).flatMap((_, i) => [0, 2, 4, 5, 7, 9, 11, 1, 3, 6, 8, 10].map(y => 3 + y + i * 12)),
+    87
+  ]
+  // const indices = [...new Array(7)].flatMap((x, i) => [0, 2, 4, 5, 7, 9, 11, 1, 3, 6, 8, 10].map(y => 24 + y + i * 12))
+  // indices.unshift(21, 23, 22)
+  // indices.push(108)
+  
 
   /**
    * @typedef PianoKeyEvent
@@ -105,9 +136,9 @@
     if (!['keyup', 'keydown'].includes(event.type)) return
     const source = 'keyboard'
     const command = event.type
-    const i = 'drftghujikol'.split('').indexOf(event.key)
+    const i = 'qawsdrftghujikol'.split('').indexOf(event.key)
     if (i < 0) return
-    const tone = i + 12 * 7
+    const tone = i + 12 * 7 - 4
     const note = getNote(tone)
     const velocity = 0.6
     // console.log('keyboardHandler', event)
@@ -128,7 +159,7 @@
     logKeyEvent({ ...event, command: 'keyup' })
     synth.keyUp(event)
     activeKeys.update(x => {
-      x.delete((event.tone || 25) - 24)
+      x.delete((event.tone || 25) - 21)
       return x
     })
 	}
@@ -137,7 +168,7 @@
     logKeyEvent({ ...event, command: 'keydown' })
     synth.keyDown(event)
     activeKeys.update(x => {
-      x.add((event.tone || 25) - 24)
+      x.add((event.tone || 25) - 21)
       return x
     })
     // console.log($activeKeys)
