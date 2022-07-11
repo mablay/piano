@@ -18,7 +18,7 @@
       end={te.end}
     />
     {/each}
-  </g>  
+  </g>
 </svg>
 
 <script lang="ts">
@@ -30,9 +30,13 @@ let stopAnimation
 let mountTime = 0
 onMount(() => {
   mountTime = Date.now()
-  stopAnimation = setInterval(() => $time = Date.now() - mountTime, 10)
+  animate()
 })
-onDestroy(() => clearInterval(stopAnimation))
+function animate () {
+  stopAnimation = requestAnimationFrame(animate)
+  $time = Date.now() - mountTime
+}
+onDestroy(() => cancelAnimationFrame(stopAnimation))
 
 </script>
 
