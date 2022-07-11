@@ -54,7 +54,7 @@ const allkeys = range(88).map(index => {
     black,
     // index,
     active: false,
-    // tone,
+    tone,
     points: shape2points(shape, dx),
   }
   // replace keys at the edges of the keyboard

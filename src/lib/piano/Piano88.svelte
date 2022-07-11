@@ -3,36 +3,41 @@
   on:keyup={keyboardHandler}
 />
 
-<svg class="piano" viewBox="0 0 1248 112">
-  <defs>
-    <linearGradient id="gradBlack" x1="0" y1="0" x2="0" y2="1">
+<div class="piano">
+  <Timeline88 />
+  <svg class="key-layout" viewBox="0 0 1248 112">
+    <defs>
+      <linearGradient id="gradBlack" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0.7" stop-color="#222"/>
         <stop offset="1" stop-color="#666"/>
-    </linearGradient>
-    <linearGradient id="gradBlackPressed" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0.2" stop-color="#222"/>
-      <stop offset="1" stop-color="#888"/>
-  </linearGradient>
-  <linearGradient id="gradWhite" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0.2" stop-color="#fffff0"/>
-      <stop offset="1" stop-color="#DDD"/>
-  </linearGradient>
-</defs>    
-  {#each keys as key}
-  <PianoKey
-    key={key}
-    on:virtualkeyup={virtualKeyUp}
-    on:virtualkeydown={virtualKeyDown}
-  />
-  {/each}
-</svg>
+      </linearGradient>
+      <linearGradient id="gradBlackPressed" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0.2" stop-color="#222"/>
+        <stop offset="1" stop-color="#888"/>
+      </linearGradient>
+      <linearGradient id="gradWhite" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0.2" stop-color="#fffff0"/>
+        <stop offset="1" stop-color="#DDD"/>
+      </linearGradient>
+    </defs>    
+    {#each keys as key}
+    <PianoKey
+      key={key}
+      on:virtualkeyup={virtualKeyUp}
+      on:virtualkeydown={virtualKeyDown}
+    />
+    {/each}
+  </svg>
+</div>
+
 
 <script>
-  import { onDestroy } from 'svelte'
+  import Timeline88 from './Timeline88.svelte'
   import PianoKey from './PianoKey.svelte'
+  import { journalTone, time } from './timeline'
   import { getNote } from '../util'
   import { writable } from 'svelte/store'
-  import { keys, getKey } from './key-layout-88'
+  import { keys } from './key-layout-88'
   import { synth } from '../../store/synth.js'
   
   export const activeKeys = writable(new Set())
@@ -126,6 +131,7 @@
     synth.keyUp(event)
     const keyIndex = keys.findIndex(key => key.note === event.note)
     if (~keyIndex) keys[keyIndex].active = false
+    journalTone(event.tone, $time, true)
 	}
   /** @param {PianoKeyEvent} event */
 	function keyDown(event) {
@@ -133,6 +139,7 @@
     synth.keyDown(event)
     const keyIndex = keys.findIndex(key => key.note === event.note)
     if (~keyIndex) keys[keyIndex].active = true
+    journalTone(event.tone, $time)
 	}
 </script>
 
@@ -141,5 +148,10 @@
   position: fixed;
   bottom: 0;
   width: 100vw;
+}
+
+.key-layout {
+  width: 100%;
+  display: block;
 }
 </style>

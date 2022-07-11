@@ -40,7 +40,7 @@ export let key
 /** @type {any} */
 let el
 // $: active = $activeKeys.has(index)
-// $: tone = key.tone
+$: tone = key.tone
 // $: points = key.shape.map(([x, y]) => `${x + key.offset}, ${y}`).join(' ')
 $: note = key.note
 
@@ -65,7 +65,7 @@ function mouseLeave (event) {
 function keyDown () {
   key.active = true
   dispatch('virtualkeydown', {
-    // tone,
+    tone,
     note,
     velocity: 0.5,
     source: 'virtual'
@@ -75,7 +75,7 @@ function keyDown () {
 function keyUp () {
   key.active = false
   dispatch('virtualkeyup', {
-    // tone,
+    tone,
     note,
     velocity: 0,
     source: 'virtual'
