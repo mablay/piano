@@ -14,6 +14,8 @@ export let synth
 export async function loadSynth () {
   console.log('loading synth...')
   const start = Date.now()
+  // @ts-ignore silence tone.js console version logging
+  window.TONE_SILENCE_LOGGING = true
   const { Piano } = await import('@tonejs/piano')
   synth = new Piano({
     velocities: 5 // 1 - 16

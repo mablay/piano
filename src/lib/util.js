@@ -15,11 +15,17 @@ export function toAscii (text) {
   return[...text].map(s => s.charCodeAt(0))
 }
 
+/** @param {Number} len */
+export function range (len) {
+  return [...new Array(len)].map((_, i) => i)
+}
+
+
 /** @param {Number} index */
 export function getNote (index) {
   const i = index
   const notes = 'C C# D D# E F F# G G# A A# B'.split(' ')
   const octave = Math.floor(i / 12) - 1
-  const note = notes[i % 12] + octave
+  const note = `${notes[i % 12]}${octave}`
   return note
 }

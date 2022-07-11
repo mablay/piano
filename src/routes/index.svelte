@@ -3,7 +3,8 @@
 </script>
 
 <script>
-	import Piano from '$lib/Piano.svelte'
+	import Piano from '$lib/piano/Piano88.svelte'
+	// import Piano from '$lib/Piano.svelte'
 </script>
 
 <svelte:head>
