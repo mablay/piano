@@ -24,7 +24,7 @@
 <script lang="ts">
 import { onDestroy, onMount } from 'svelte'
 import ToneEvent from './ToneEvent.svelte'
-import { toneEvents, time } from './timeline'
+import { toneEvents, time, pruneStaleEvents } from './timeline'
 
 let stopAnimation
 let mountTime = 0
@@ -35,6 +35,9 @@ onMount(() => {
 function animate () {
   stopAnimation = requestAnimationFrame(animate)
   $time = Date.now() - mountTime
+  if (stopAnimation % 100 === 0) {
+    pruneStaleEvents($toneEvents, $time)
+  }
 }
 onDestroy(() => cancelAnimationFrame(stopAnimation))
 
