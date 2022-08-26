@@ -30,6 +30,7 @@ let stopAnimation
 let mountTime = 0
 onMount(() => {
   mountTime = Date.now()
+  toneEvents.set([])
   animate()
 })
 function animate () {

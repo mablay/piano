@@ -36,11 +36,11 @@
   import PianoKey from './PianoKey.svelte'
   import { journalTone, time } from './timeline'
   import { getNote } from '../util'
-  import { writable } from 'svelte/store'
   import { keys } from './key-layout-88'
   import { synth } from '../../store/synth.js'
-  
-  export const activeKeys = writable(new Set())
+  import { inMsg } from '../../store/midi'
+  import { onDestroy, onMount } from 'svelte'
+  import { activeKeys } from '../../store/piano'
 
   /**
    * @typedef PianoKeyEvent
@@ -57,25 +57,26 @@
     Tested with Arturia KeyLab Essential 88
   *************************************** */
 
-  /*
-  const unsubscribe = inMsg.subscribe(value => {
-    if (!value) return
-    const source = 'midi'
-    const [cmd, ctrltone, vel] = value.data
-    if (cmd === 144) {
-      const velocity = vel / 127
-      const tone = ctrltone
-      const note = getNote(tone) // TODO: check if tone mapping is accurate
-      keyDown({ note, velocity, source, tone })
-    } else if (cmd === 128) {
-      const velocity = vel / 127
-      const tone = ctrltone
-      const note = getNote(tone) // TODO: check if tone mapping is accurate
-      keyUp({ note, velocity, source, tone })
-    }
+  let unsubscribe = () => {}
+  onMount(() => {
+    unsubscribe = inMsg.subscribe(value => {
+      if (!value) return
+      const source = 'midi'
+      const [cmd, ctrltone, vel] = value.data
+      if (cmd === 144) {
+        const velocity = vel / 127
+        const tone = ctrltone
+        const note = getNote(tone) // TODO: check if tone mapping is accurate
+        keyDown({ note, velocity, source, tone })
+      } else if (cmd === 128) {
+        const velocity = vel / 127
+        const tone = ctrltone
+        const note = getNote(tone) // TODO: check if tone mapping is accurate
+        keyUp({ note, velocity, source, tone })
+      }
+    })  
   })
-  onDestroy(() => unsubscribe())
-  */
+  onDestroy(unsubscribe)
 
   /* *************************************** 
     - Virtual Keyboard -
@@ -132,6 +133,10 @@
     const keyIndex = keys.findIndex(key => key.note === event.note)
     if (~keyIndex) keys[keyIndex].active = false
     journalTone(event.tone, $time, true)
+    activeKeys.update(x => {
+      x.delete(event.tone)
+      return x
+    })
 	}
   /** @param {PianoKeyEvent} event */
 	function keyDown(event) {
@@ -140,6 +145,13 @@
     const keyIndex = keys.findIndex(key => key.note === event.note)
     if (~keyIndex) keys[keyIndex].active = true
     journalTone(event.tone, $time)
+    activeKeys.update(x => {
+      x.set(event.tone, {
+        ...event,
+        time: Date.now()
+      })
+      return x
+    })
 	}
 </script>
 
